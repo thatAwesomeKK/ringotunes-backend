@@ -16,6 +16,7 @@ app.use(express.json({ limit: '1000mb' }))
 app.use(express.urlencoded({ extended: false }))
 
 app.use('/auth', require('./routes/auth'))
+app.use('/ring', require('./routes/ringtones'))
 
 // serves the application at the defined port
 app.listen(PORT, () => {

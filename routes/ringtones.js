@@ -1,9 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const Grid = require('gridfs-stream');
 const { verifyAccessToken } = require("../middleware/jwtVerify");
 const User = require("../models/User");
 const Ringtone = require("../models/Ringtone");
+const upload = require("../lib/storageEngine");
+const { cloudinary } = require("../lib/cloudinary");
 
 const conn = mongoose.connection
 let gfs
@@ -18,18 +21,31 @@ conn.once('open', () => {
 })
 
 // route for uploading a file  /ring/upload
-router.post('/upload', upload.single('file'), verifyAccessToken, async (req, res) => {
-    const uploadedFile = req.file
+router.post('/upload', verifyAccessToken, upload.single('file'), async (req, res) => {
+    try {
+        const uploadedFile = req.file
+    const { title, origin, image } = req.body
     const user = await User.findById({ _id: req.verify.id });
     if (!user) {
         return res.status(403).json({ success: false, error: 'No User Found' });
     }
+
+    const response = await cloudinary.uploader.upload(image, {
+        upload_preset: "thumbnail"
+    });
+
     const newRing = new Ringtone({
         ringID: uploadedFile.id,
-        userID: user.id
+        uid: user.id,
+        title,
+        origin,
+        thumbnail: response.secure_url,
     })
     await newRing.save()
-    return res.status(200).json({ success: true, message: "Ringtone Uploaded Successfully!", videoID: newRing.id })
+    return res.status(200).json({ success: true, message: "Ringtone Uploaded Successfully!", ringID: newRing.id })
+    } catch (error) {
+        return res.status(500).json({error})
+    }
 })
 
 //Update Video Meta

@@ -16,8 +16,7 @@ const verifyRefreshToken = async (req, res, next) => {
 
 const verifyAccessToken = async (req, res, next) => {
     try {
-      console.log(req.body);
-      let token = await req.body.accessToken.split(" ")[1]
+      let token = await req.headers.accesstoken.split(" ")[1]
       if (!token) {
         return res.status(401).json({ success: false, error: "Not Authorized" });
       }

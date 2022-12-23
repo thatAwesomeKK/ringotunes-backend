@@ -7,6 +7,7 @@ const { verifyRefreshToken, verifyAccessToken } = require('../middleware/jwtVeri
 const cookieConfig = { sameSite: 'none', secure: true, httpOnly: true, domain: 'localhost' }
 
 router.post('/register', async (req, res) => {
+    console.log(req.body);
     try {
         const { username, email, password } = req.body
 
@@ -34,6 +35,7 @@ router.post('/register', async (req, res) => {
 })
 
 router.post('/login', async (req, res) => {
+    console.log(req.body);
     try {
         const { email, password } = req.body
 
