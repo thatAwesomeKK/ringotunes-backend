@@ -24,27 +24,27 @@ conn.once('open', () => {
 router.post('/upload', verifyAccessToken, upload.single('file'), async (req, res) => {
     try {
         const uploadedFile = req.file
-    const { title, origin, image } = req.body
-    const user = await User.findById({ _id: req.verify.id });
-    if (!user) {
-        return res.status(403).json({ success: false, error: 'No User Found' });
-    }
+        const { title, origin, image } = req.body
+        const user = await User.findById({ _id: req.verify.id });
+        if (!user) {
+            return res.status(403).json({ success: false, error: 'No User Found' });
+        }
 
-    const response = await cloudinary.uploader.upload(image, {
-        upload_preset: "thumbnail"
-    });
+        const response = await cloudinary.uploader.upload(image, {
+            upload_preset: "thumbnail"
+        });
 
-    const newRing = new Ringtone({
-        ringID: uploadedFile.id,
-        uid: user.id,
-        title,
-        origin,
-        thumbnail: response.secure_url,
-    })
-    await newRing.save()
-    return res.status(200).json({ success: true, message: "Ringtone Uploaded Successfully!", ringID: newRing.id })
+        const newRing = new Ringtone({
+            ringID: uploadedFile.id,
+            uid: user.id,
+            title,
+            origin,
+            thumbnail: response.secure_url,
+        })
+        await newRing.save()
+        return res.status(200).json({ success: true, message: "Ringtone Uploaded Successfully!", ringID: newRing.id })
     } catch (error) {
-        return res.status(500).json({error})
+        return res.status(500).json({ error })
     }
 })
 
@@ -73,7 +73,7 @@ router.post('/updatevideometa', async (req, res) => {
 
 })
 
-// route for streaming a file  /ringtone/stream?filename=
+// route for streaming a file  /ring/stream?fileid=
 router.get('/stream', async (req, res) => {
     try {
         const { fileid } = req.query
@@ -110,10 +110,10 @@ router.get('/stream', async (req, res) => {
     }
 })
 
-// route for fetching all the files from the media bucket  /video/files
+// route for fetching all the files from the media bucket  /ring/files
 router.get('/files', async (req, res) => {
     try {
-        const ring = await Ringtone.find({}).populate({ path: 'uid', model: User, select: 'username pfp' }).select('title thumbnail likes videoID')
+        const ring = await Ringtone.find({}).populate({ path: 'uid', model: User, select: 'username pfp' }).select('ringID title thumbnail likes origin downloads createdAt')
         return res.status(200).json(ring);
     } catch (err) {
         return res.status(400).send(err)
@@ -130,6 +130,16 @@ router.delete('/delete/:filename', async (req, res) => {
         res.status(200).end()
     } catch (err) {
         res.status(400).send(err)
+    }
+})
+
+router.get('/getone/:ringID', async (req, res) => {
+    const { ringID } = req.params
+    try {
+        const ring = await Ringtone.findById({ _id: ringID }).populate({ path: 'uid', model: User, select: 'username pfp' }).select('ringID title thumbnail likes origin downloads createdAt')
+        return res.status(200).json(ring);
+    } catch (err) {
+        return res.status(400).send(err)
     }
 })
 
