@@ -17,6 +17,7 @@ app.use(express.urlencoded({ extended: false }))
 
 app.use('/auth', require('./routes/auth'))
 app.use('/ring', require('./routes/ringtones'))
+app.use('/user', require('./routes/user'))
 
 // serves the application at the defined port
 app.listen(PORT, () => {

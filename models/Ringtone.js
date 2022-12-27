@@ -26,12 +26,14 @@ const ringSchema = new Schema({
         type: String,
         required: true,
     },
-    likes: {
-        type: Array
-    },
-    downloads: {
-        type: Array,
-    }
+    likes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    }],
+    downloads: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('ring', ringSchema)

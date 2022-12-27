@@ -97,7 +97,7 @@ router.get('/stream', async (req, res) => {
             "Content-Range": `bytes ${start}-${end}/${ringSize}`,
             "Accept-Ranges": "bytes",
             "Content-Length": contentLength,
-            "Content-Type": "video/mp4",
+            "Content-Type": "audio/mpeg",
         };
 
         res.writeHead(206, headers)
@@ -120,6 +120,34 @@ router.get('/files', async (req, res) => {
     }
 })
 
+// route for downloading a file
+router.get('/download/:filename', async (req, res) => {
+    const { filename } = req.params
+    try {
+
+        const ObjectID = mongoose.mongo.ObjectId;
+        const ring = await gfs.files.findOne({ "_id": ObjectID(filename) })
+        if (!ring) {
+            return res.status(400).send('No Ring Found!')
+        }
+
+        const contentType = ring.contentType
+        //setting response header
+        const headers = {
+            "Accept-Ranges": "bytes",
+            "Content-Disposition": `attachment; filename=${filename}`,
+            "Content-Type": `${contentType}`
+        };
+        res.writeHead(206, headers)
+
+        //Streaming the audio for downloading
+        const downstream = await gridfsBucket.openDownloadStreamByName(ring.filename);
+        downstream.pipe(res)
+    } catch (err) {
+        return res.status(400).send("Internal Server Error")
+    }
+})
+
 // route for deleting a file
 router.delete('/delete/:filename', async (req, res) => {
     const { filename } = req.params
@@ -137,6 +165,18 @@ router.get('/getone/:ringID', async (req, res) => {
     const { ringID } = req.params
     try {
         const ring = await Ringtone.findById({ _id: ringID }).populate({ path: 'uid', model: User, select: 'username pfp' }).select('ringID title thumbnail likes origin downloads createdAt')
+        return res.status(200).json(ring);
+    } catch (err) {
+        return res.status(400).send(err)
+    }
+})
+
+router.get('/getonerandom', async (req, res) => {
+    try {
+        // const ring = await Ringtone.aggregate([{$sample:{size: 1}}]).populate({ path: 'uid', model: User, select: 'username pfp' }).select('ringID title thumbnail likes origin downloads createdAt')
+        const aggRing = await Ringtone.aggregate([{ $sample: { size: 1 } }])
+        const ring = await Ringtone.populate(aggRing, { path: 'uid', model: User, select: 'username pfp' })
+
         return res.status(200).json(ring);
     } catch (err) {
         return res.status(400).send(err)
