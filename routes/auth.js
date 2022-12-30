@@ -4,6 +4,7 @@ const router = express.Router()
 const bcrypt = require('bcryptjs');
 const { getAccessToken, getRefreshToken } = require('../methods/jwtCreation');
 const { verifyRefreshToken, verifyAccessToken } = require('../middleware/jwtVerify');
+const { cloudinary } = require('../lib/cloudinary');
 const cookieConfig = { sameSite: 'none', secure: true, httpOnly: true, domain: 'localhost' }
 
 router.post('/register', async (req, res) => {
@@ -74,6 +75,31 @@ router.get("/refresh", verifyRefreshToken, async (req, res) => {
         const accessToken = await getAccessToken({ id: user.id });
         res.cookie("refreshToken", await getRefreshToken({ id: user.id }), cookieConfig);
         return res.json({ success: true, accessToken: `Bearer ${accessToken}` });
+    } catch (error) {
+        res.clearCookie('refreshToken', cookieConfig);
+        return res.status(500).json({ success: false, error: error })
+    }
+});
+
+router.post("/update", verifyAccessToken, async (req, res) => {
+    try {
+        const { pfp, username } = req.body
+        let user = await User.findById({ _id: req.verify.id });
+        if (!user) {
+            return res.status(401).json({ success: false });
+        }
+        let updUser = {}
+        if (pfp) {
+            const response = await cloudinary.uploader.upload(pfp, {
+                upload_preset: "pfp"
+            });
+            updUser.pfp = response.secure_url
+        }
+        if (username) { updUser.username = username }
+
+        await User.findByIdAndUpdate({ _id: user.id }, updUser)
+
+        return res.status(200).json({ success: true, message: "User Updated SuccessFully!" });
     } catch (error) {
         res.clearCookie('refreshToken', cookieConfig);
         return res.status(500).json({ success: false, error: error })
