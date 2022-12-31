@@ -86,8 +86,42 @@ router.post('/dash', verifyAccessToken, async (req, res) => {
         rings.forEach((ring) => {
             downloadsCount += ring.downloads.length
         })
-        
+
         return res.status(200).json({ rings, likesCount, downloadsCount, uid: { pfp: user.pfp, username: user.username } });
+    } catch (err) {
+        return res.status(400).send({ error: err })
+    }
+})
+
+router.get('/myliked', verifyAccessToken, async (req, res) => {
+    try {
+        const user = await User.findById({ _id: req.verify.id });
+        if (!user) {
+            return res.status(400).send({ error: "User Does Not Exist" })
+        }
+        const rings = await Ringtone.find({ likes: { "$in": [user.id] } }).select('ringID title thumbnail likes origin downloads createdAt')
+        if (!rings) {
+            return res.status(400).send({ error: "Rings Does Not Exist" })
+        }
+
+        return res.status(200).json({ success: true, rings });
+    } catch (err) {
+        return res.status(400).send({ error: err })
+    }
+})
+
+router.get('/mydownloads', verifyAccessToken, async (req, res) => {
+    try {
+        const user = await User.findById({ _id: req.verify.id });
+        if (!user) {
+            return res.status(400).send({ error: "User Does Not Exist" })
+        }
+        const rings = await Ringtone.find({ downloads: { "$in": [user.id] } }).select('ringID title thumbnail likes origin downloads createdAt')
+        if (!rings) {
+            return res.status(400).send({ error: "Rings Does Not Exist" })
+        }
+
+        return res.status(200).json({ success: true, rings });
     } catch (err) {
         return res.status(400).send({ error: err })
     }
@@ -101,25 +135,16 @@ router.post('/handle-download', verifyAccessToken, async (req, res) => {
             return res.status(400).send({ error: "User Does Not Exist" })
         }
 
-        const ring = await Ringtone.findById({ _id: docID }).select('downloads')
-        if(!ring){
+        const ring = await Ringtone.findOneAndUpdate({ _id: docID }, {
+            $addToSet: {
+                downloads: user.id
+            }
+        })
+        if (!ring) {
             return res.status(400).send({ error: "Ringtone Does Not Exist" })
         }
 
-        if (ring.downloads.includes(user.id)) {
-            await Ringtone.findOneAndUpdate({ _id: docID }, {
-                $pull: {
-                    downloads: user.id
-                }
-            })
-        } else {
-            await Ringtone.findOneAndUpdate({ _id: docID }, {
-                $addToSet: {
-                    downloads: user.id
-                }
-            })
-        }
-        return res.status(200).json({ success: true , message: "Download Successfully!"});
+        return res.status(200).json({ success: true, message: "Download Successfully!" });
     } catch (err) {
         return res.status(400).send({ error: err })
     }
