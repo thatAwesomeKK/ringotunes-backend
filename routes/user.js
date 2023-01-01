@@ -40,11 +40,11 @@ router.post('/check-like', verifyAccessToken, async (req, res) => {
         const ring = await Ringtone.findById({ _id: docID })
 
         if (ring.likes.includes(user.id)) {
-            return res.status(200).json(true);
+            return res.status(200).json({ success: true, error: "Has Liked!" });
         }
-        return res.status(200).json(false);
+        return res.status(200).json({ success: false, error: "Not Liked!" });
     } catch (err) {
-        return res.status(400).send(false)
+        return res.status(400).send({ success: false, error: "Not Liked" })
     }
 })
 

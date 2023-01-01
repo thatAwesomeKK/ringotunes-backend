@@ -5,6 +5,9 @@ const bcrypt = require('bcryptjs');
 const { getAccessToken, getRefreshToken } = require('../methods/jwtCreation');
 const { verifyRefreshToken, verifyAccessToken } = require('../middleware/jwtVerify');
 const { cloudinary } = require('../lib/cloudinary');
+const { OAuth2Client } = require('google-auth-library');
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 const cookieConfig = { sameSite: 'none', secure: true, httpOnly: true, domain: 'localhost' }
 
 router.post('/register', async (req, res) => {
@@ -57,6 +60,47 @@ router.post('/login', async (req, res) => {
         let refreshToken = await getRefreshToken({ id: foundUser._id });
 
         //setting refreshToken in Cookie
+        res.cookie("refreshToken", refreshToken, cookieConfig);
+        return res.status(200).json({ success: true, accessToken: `Bearer ${accessToken}` });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: 'Internal Server Error' })
+    }
+})
+
+router.post('/google-login', async (req, res) => {
+    try {
+        const { googleToken } = req.body
+        const response = await googleClient.verifyIdToken({
+            idToken: googleToken,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = response.getPayload()
+        const { email, picture, name } = payload
+        console.log(email, picture, name);
+        
+        //Checking if user with email exists
+        const foundUser = await User.findOne({ email })
+
+        //If User Does Not Exist
+        if (!foundUser) {
+            let newUser = new User({
+                username: name,
+                email,
+                pfp: picture,
+            });
+            const user = await newUser.save()
+            console.log(user);
+
+            let refreshToken = await getRefreshToken({ id: user._id });
+            let accessToken = await getAccessToken({ id: user._id });
+
+            res.cookie("refreshToken", refreshToken, cookieConfig);
+            return res.status(200).json({ success: true, accessToken: `Bearer ${accessToken}` });
+        }
+
+        //If User Exists
+        let refreshToken = await getRefreshToken({ id: foundUser._id });
+        let accessToken = await getAccessToken({ id: foundUser._id });
         res.cookie("refreshToken", refreshToken, cookieConfig);
         return res.status(200).json({ success: true, accessToken: `Bearer ${accessToken}` });
     } catch (error) {
