@@ -1,31 +1,44 @@
-const express = require('express');
+import "dotenv/config.js";
+import express from 'express';
 const app = express();
-const cors = require('cors');
-require('dotenv').config();
-const morgan = require("morgan");
-const cookieParser = require('cookie-parser');
+import cors from 'cors';
+import morgan from "morgan";
+import cookieParser from 'cookie-parser';
 const PORT = process.env.PORT || 5000;
-const connectToMongo = require('./lib/db');
-connectToMongo();
+import {connectToMongo} from './src/config/db.js'
+import authRouter from './src/routes/auth.js'
+import ringRouter from './src/routes/ringtones.js'
+import userRouter from './src/routes/user.js'
 
 app.use(cors({
     origin: process.env.CLIENT_URL,
     credentials: true,
 }));
-
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(express.json({ limit: '1000mb' }));
 app.use(express.urlencoded({ extended: false }));
 
+//Routes
+app.use('/auth', authRouter);
+app.use('/ring', ringRouter);
+app.use('/user', userRouter);
+
 app.get("/", (req, res) => {
     res.send("Hello World");
 })
-app.use('/auth', require('./routes/auth'));
-app.use('/ring', require('./routes/ringtones'));
-app.use('/user', require('./routes/user'));
 
-// serves the application at the defined port
-app.listen(PORT, () => {
-    console.log(`Server is running on : http://localhost:${PORT}`);
-});
+//serves the application at the defined port if Connected to MongoDB
+connectToMongo().then(() => {
+    try {
+        app.listen(PORT, () => {
+            console.log('Connected to MongoDB');
+            console.log(`Server is running on : http://localhost:${PORT}`);
+        });
+    } catch (error) {
+        console.log("Cannot Connect to Server");
+    }
+}).catch(e => {
+    console.log("Error In Connecting to Server!");
+})
+

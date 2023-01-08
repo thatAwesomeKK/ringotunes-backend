@@ -1,7 +1,6 @@
-const mongoose = require('mongoose')
-const { Schema } = mongoose
+import mongoose from 'mongoose'
 
-const ringSchema = new Schema({
+const ringSchema = new mongoose.Schema({
     ringID: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'media',
@@ -36,4 +35,4 @@ const ringSchema = new Schema({
     }]
 }, { timestamps: true });
 
-module.exports = mongoose.model('ring', ringSchema)
+export default mongoose.model('ring', ringSchema)
