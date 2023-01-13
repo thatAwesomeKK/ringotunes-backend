@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 
+//Check If the User's Email is Verified
 export default async function (req, res, next) {
     try {
         const user = await User.findById({ _id: req.verify.id });

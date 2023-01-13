@@ -15,7 +15,7 @@ export default async function (req, res) {
         const { email, picture, name } = payload
 
         //Checking if user with email exists
-        const foundUser = await Userr.findOne({ email })
+        const foundUser = await User.findOne({ email })
 
         //If User Does Not Exist
         if (!foundUser) {
@@ -28,8 +28,8 @@ export default async function (req, res) {
             const user = await newUser.save()
             console.log(user);
 
-            let refreshToken = getRefreshToken({ id: user._id });
-            let accessToken = getAccessToken({ id: user._id });
+            const refreshToken = getRefreshToken({ id: user._id });
+            const accessToken = getAccessToken({ id: user._id });
 
             res.cookie("refreshToken", refreshToken, cookieConfig);
             return res.status(200).json({ success: true, accessToken: `Bearer ${accessToken}` });

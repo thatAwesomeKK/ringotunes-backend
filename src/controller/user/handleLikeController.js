@@ -3,10 +3,10 @@ import User from "../../models/User.js";
 
 export default async function (req, res) {
     try {
-        const user = await User.findById({ _id: req.verify.id });
+        const user = await User.findById(req.verify.id);
         const { docID } = req.body
 
-        const ring = await Ringtone.findById({ _id: docID })
+        const ring = await Ringtone.findById(docID)
 
         if (ring.likes.includes(user.id)) {
             await Ringtone.findOneAndUpdate({ _id: docID }, {
