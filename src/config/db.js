@@ -7,6 +7,7 @@ export async function connectToMongo() {
         .connect(mongoURI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
+            authSource: "admin",
             ssl: true,
         })
     return db
