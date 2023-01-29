@@ -32,15 +32,15 @@ export default async function (req, res) {
             const accessToken = getAccessToken({ id: user._id });
 
             res.cookie("refreshToken", refreshToken, cookieConfig);
-            return res.status(200).json({ success: true, accessToken: `Bearer ${accessToken}` });
+            return res.status(200).json({ success: true, message: 'Logged In Successfully!', accessToken: `Bearer ${accessToken}` });
         }
 
         //If User Exists
         let refreshToken = getRefreshToken({ id: foundUser._id });
         let accessToken = getAccessToken({ id: foundUser._id });
         res.cookie("refreshToken", refreshToken, cookieConfig);
-        return res.status(200).json({ success: true, accessToken: `Bearer ${accessToken}` });
+        return res.status(200).json({ success: true, message: 'Logged In Successfully!', accessToken: `Bearer ${accessToken}` });
     } catch (error) {
-        return res.status(400).json({ success: false, message: 'Internal Server Error' })
+        return res.status(400).json({ success: false, error: 'Internal Server Error' })
     }
 }

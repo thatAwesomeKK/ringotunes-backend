@@ -21,11 +21,11 @@ router.put('/updateringmeta', updateRingMetaController) //Update the Video MetaD
 //GET
 router.get('/stream', streamMetaController) //Stream the Ringtone /ring/stream?=fileid
 router.get('/files', getAllRingsController) //Fetch all the rings /ring/files?=page&?=limit
-router.get('/download/:filename', downloadRingController) //Download a ring /ring/files/:filename
+router.get('/download/:filename', checkEmailVerified, downloadRingController) //Download a ring /ring/files/:filename
 router.get('/getone/:ringID', getOneRingController) //Get One Ring /ring/getone/:ringID
 router.get('/getonerandom', getOneRandomController) //Get One Random Ring /ring/getonerandom
 
 //DELETE
-router.delete('/delete/:filename', deleteRingController) //Delete a ring /ring/delete/:filename
+router.delete('/delete/:filename', verifyAccessToken, checkEmailVerified, deleteRingController) //Delete a ring /ring/delete/:filename
 
 export default router
