@@ -5,13 +5,12 @@ import cors from 'cors';
 import morgan from "morgan";
 import cookieParser from 'cookie-parser';
 const PORT = process.env.PORT || 5000;
-import {connectToMongo} from './src/config/db.js'
+import { connectToMongo } from './src/config/db.js'
 import authRouter from './src/routes/auth.js'
 import ringRouter from './src/routes/ringtones.js'
 import userRouter from './src/routes/user.js'
 
 app.use(cors({
-    origin: process.env.CLIENT_URL,
     credentials: true,
 }));
 app.use(cookieParser());
