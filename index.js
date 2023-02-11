@@ -10,9 +10,7 @@ import authRouter from './src/routes/auth.js'
 import ringRouter from './src/routes/ringtones.js'
 import userRouter from './src/routes/user.js'
 
-app.use(cors({
-    credentials: true,
-}));
+app.use(cors());
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(express.json({ limit: '1000mb' }));
