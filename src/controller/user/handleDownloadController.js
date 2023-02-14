@@ -15,7 +15,7 @@ export default async function(req, res){
             }
         })
         if (!ring) {
-            return res.status(400).send({ error: "Ringtone Does Not Exist" })
+            return res.status(400).send({ error: "Download Unsuccesfull" })
         }
 
         return res.status(200).json({ success: true, message: "Download Successfully!" });

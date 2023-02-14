@@ -12,7 +12,7 @@ const router = Router();
 import { verifyAccessToken } from "../middleware/jwtVerify.js";
 
 //POST
-router.patch('/handle-download', verifyAccessToken, handleDownloadController) //Add Download /user/handle-download
+router.patch('/handle-download', verifyAccessToken, checkEmailVerified, handleDownloadController) //Add Download /user/handle-download
 router.patch('/handle-like', verifyAccessToken, handleLikeController) //Update Like /user/handle-like
 router.post('/check-like', verifyAccessToken, checkLikeController) //Check Liked /user/check-like
 
