@@ -9,6 +9,11 @@ export default async function (req, res) {
             return res.status(400).json({ success: false, error: "User Not Found!" })
         }
 
+        const passwordCompare = await bcrypt.compare(password, foundUser.password);
+        if(passwordCompare){
+            return res.status(400).json({ success: false, error: "You Cannot use the Same Password" })
+        }
+        
         const salt = await bcrypt.genSalt(10)
         const secPass = await bcrypt.hash(password, salt);
 

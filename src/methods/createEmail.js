@@ -2,7 +2,6 @@ import { createTransport } from "nodemailer";
 import Mailgen from 'mailgen';
 
 export const emailVerifyGenerator = async (email, genEmail) => {
-    console.log(genEmail);
     const transporter = createTransport({
         service: 'gmail',
         host: "smtp.gmail.com",
