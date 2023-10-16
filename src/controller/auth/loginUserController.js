@@ -6,7 +6,7 @@ import User from '../../models/User.js';
 export default async function (req, res) {
     try {
         const { email, password } = req.body
-
+        
         //Checking if user with email exists
         let foundUser = await User.findOne({ email })
         if (!foundUser) {

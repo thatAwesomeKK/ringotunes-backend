@@ -11,7 +11,7 @@ const jwtForgotPasswordSecret = process.env.JWT_FORGOT_PASSWORD_SECRET;
 //Verify Refresh Token
 export const verifyRefreshToken = async (req, res, next) => {
   try {
-    let token = await req.cookies.refreshToken;
+    let token = await req.headers.refreshtoken;
     if (!token) {
       return res.status(401).json({ success: false, error: "Not Authorized" });
     }
@@ -27,7 +27,7 @@ export const verifyRefreshToken = async (req, res, next) => {
 //Verify Access Token
 export const verifyAccessToken = async (req, res, next) => {
   try {
-    let token = await req.headers.accesstoken.split(" ")[1]
+    const token = await req.headers.accesstoken.split(" ")[1]
     if (!token) {
       return res.status(401).json({ success: false, error: "Not Authorized" });
     }

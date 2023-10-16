@@ -15,6 +15,7 @@ conn.once('open', () => {
 
 export default async function (req, res) {
     const { filename } = req.params
+    console.log(filename);
     try {
 
         const ObjectID = mongoose.mongo.ObjectId;

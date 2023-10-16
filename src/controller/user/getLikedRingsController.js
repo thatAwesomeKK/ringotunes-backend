@@ -12,7 +12,7 @@ export default async function (req, res) {
             return res.status(400).send({ error: "Rings Does Not Exist" })
         }
 
-        return res.status(200).json({ success: true, rings });
+        return res.status(200).json({ success: true, message: rings });
     } catch (err) {
         return res.status(400).send({ error: err })
     }

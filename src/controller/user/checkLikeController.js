@@ -4,9 +4,9 @@ import User from "../../models/User.js";
 export default async function(req, res){
     try {
         const user = await User.findById({ _id: req.verify.id });
-        const { docID } = req.body
+        const { docId } = req.body
 
-        const ring = await Ringtone.findById({ _id: docID })
+        const ring = await Ringtone.findById({ _id: docId })
 
         if (ring.likes.includes(user.id)) {
             return res.status(200).json({ success: true, error: "Has Liked!" });

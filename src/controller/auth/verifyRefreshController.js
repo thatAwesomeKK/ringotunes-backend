@@ -4,7 +4,7 @@ import User from "../../models/User.js";
 
 export default async function (req, res) {
     try {
-        let user = await User.findById({ _id: req.verify.id });
+        const user = await User.findById({ _id: req.verify.id });
         if (!user) {
             res.clearCookie('refreshToken', cookieConfig)
             return res.status(401).json({ success: false });

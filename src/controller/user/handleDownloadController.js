@@ -2,14 +2,14 @@ import Ringtone from "../../models/Ringtone.js";
 import User from "../../models/User.js";
 
 export default async function(req, res){
-    const { docID } = req.body
+    const { docId } = req.body
     try {
         const user = await User.findById({ _id: req.verify.id });
         if (!user) {
             return res.status(400).send({ error: "User Does Not Exist" })
         }
 
-        const ring = await Ringtone.findOneAndUpdate({ _id: docID }, {
+        const ring = await Ringtone.findOneAndUpdate({ _id: docId }, {
             $addToSet: {
                 downloads: user.id
             }

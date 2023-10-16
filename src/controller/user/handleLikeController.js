@@ -4,18 +4,18 @@ import User from "../../models/User.js";
 export default async function (req, res) {
     try {
         const user = await User.findById(req.verify.id);
-        const { docID } = req.body
+        const { docId } = req.body
 
-        const ring = await Ringtone.findById(docID)
+        const ring = await Ringtone.findById(docId)
 
         if (ring.likes.includes(user.id)) {
-            await Ringtone.findOneAndUpdate({ _id: docID }, {
+            await Ringtone.findOneAndUpdate({ _id: docId }, {
                 $pull: {
                     likes: user.id
                 }
             })
         } else {
-            await Ringtone.findOneAndUpdate({ _id: docID }, {
+            await Ringtone.findOneAndUpdate({ _id: docId }, {
                 $addToSet: {
                     likes: user.id
                 }
