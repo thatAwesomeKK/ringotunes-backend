@@ -3,7 +3,7 @@ import User from "../../models/User.js";
 
 export default async function (req, res) {
     try {
-        const user = await User.findById(req.verify.id);
+        const user = req.user
         const { docId } = req.body
 
         const ring = await Ringtone.findById(docId)

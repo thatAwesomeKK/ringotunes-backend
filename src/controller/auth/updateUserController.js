@@ -5,7 +5,7 @@ import User from "../../models/User.js";
 export default async function (req, res) {
     try {
         const { pfp, username } = req.body
-        let user = await User.findById({ _id: req.verify.id });
+        const user = req.user
         if (!user) {
             return res.status(401).json({ success: false });
         }

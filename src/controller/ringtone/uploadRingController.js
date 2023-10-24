@@ -6,7 +6,7 @@ export default async function (req, res) {
     try {
         const uploadedFile = req.file
         const { title, origin, image } = req.body
-        const user = await User.findById(req.verify.id);
+        const user = req.user
         if (!user) {
             return res.status(403).json({ success: false, error: 'No User Found' });
         }

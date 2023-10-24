@@ -11,9 +11,10 @@ import downloadRingController from "../controller/ringtone/downloadRingControlle
 import deleteRingController from "../controller/ringtone/deleteRingController.js";
 import getOneRingController from "../controller/ringtone/getOneRingController.js";
 import getOneRandomController from "../controller/ringtone/getOneRandomController.js";
+import passportMiddleware from "../middleware/passportMiddleware.js";
 
 //POST
-router.post('/upload', verifyAccessToken, checkEmailVerified, upload.single('file'), uploadRingController) //Upload Ringtone, if email verified /ring/upload
+router.post('/upload', passportMiddleware, checkEmailVerified, upload.single('file'), uploadRingController) //Upload Ringtone, if email verified /ring/upload
 
 //PUT
 router.put('/updateringmeta', updateRingMetaController) //Update the Video MetaData /ring/updatevideometa
@@ -26,6 +27,6 @@ router.get('/getone/:ringID', getOneRingController) //Get One Ring /ring/getone/
 router.get('/getonerandom', getOneRandomController) //Get One Random Ring /ring/getonerandom
 
 //DELETE
-router.delete('/delete/:filename', verifyAccessToken, checkEmailVerified, deleteRingController) //Delete a ring /ring/delete/:filename
+router.delete('/delete/:filename', passportMiddleware, checkEmailVerified, deleteRingController) //Delete a ring /ring/delete/:filename
 
 export default router

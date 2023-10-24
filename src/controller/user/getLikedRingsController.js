@@ -3,7 +3,7 @@ import User from "../../models/User.js";
 
 export default async function (req, res) {
     try {
-        const user = await User.findById({ _id: req.verify.id });
+        const user = req.user
         if (!user) {
             return res.status(400).send({ error: "User Does Not Exist" })
         }
