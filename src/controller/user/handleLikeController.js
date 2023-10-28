@@ -1,5 +1,4 @@
 import Ringtone from "../../models/Ringtone.js";
-import User from "../../models/User.js";
 
 export default async function (req, res) {
     try {

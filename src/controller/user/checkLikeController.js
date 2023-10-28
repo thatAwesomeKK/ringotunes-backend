@@ -9,7 +9,7 @@ export default async function (req, res) {
     const ring = await Ringtone.findById({ _id: docId });
 
     if (ring.likes.includes(user.id)) {
-      return res.status(200).json({ success: true, error: "Has Liked!" });
+      return res.status(200).json({ success: true, message: "Has Liked!" });
     }
     return res.status(200).json({ success: false, error: "Not Liked!" });
   } catch (err) {
